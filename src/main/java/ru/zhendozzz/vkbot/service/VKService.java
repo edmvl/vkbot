@@ -14,10 +14,12 @@ import com.vk.api.sdk.objects.users.UserFull;
 import com.vk.api.sdk.objects.users.responses.SearchResponse;
 import com.vk.api.sdk.queries.wall.WallPostQuery;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
+@Scope("singleton")
 public class VKService {
 
     TransportClient transportClient;
