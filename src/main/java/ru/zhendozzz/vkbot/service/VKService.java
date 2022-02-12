@@ -26,25 +26,39 @@ public class VKService {
     @Qualifier("httpTransportClient")
     private final TransportClient transportClient;
     private final TextFormatterService textFormatterService;
+    private final JobLogService jobLogService;
 
-    VKService(TextFormatterService textFormatterService, TransportClient transportClient) {
+    VKService(TextFormatterService textFormatterService, TransportClient transportClient, JobLogService jobLogService) {
         this.textFormatterService = textFormatterService;
         this.transportClient = transportClient;
+        this.jobLogService = jobLogService;
     }
 
     public void processGroup(Integer groupId, String token, Integer vkUserId) {
         VkApiClient vk = new VkApiClient(this.transportClient);
         UserActor actor = new UserActor(vkUserId, token);
-        List<UserFull> members = getMembersWithBirthdayToday(vk, actor, groupId);
-        if (CollectionUtils.isNotEmpty(members)) {
-            String s = textFormatterService.getTextForBirthDay(members);
-            postOnWall(vk, actor, groupId, s);
+        LocalDate localDate = LocalDate.now();
+        if (jobLogService.isGroupProcessed(groupId, localDate)) {
+            log.info("Group " + groupId + " already has been processed");
+            return;
+        }
+        List<UserFull> members = getMembersByBirthdayAndGroup(vk, actor, groupId, localDate);
+        try {
+            if (CollectionUtils.isNotEmpty(members)) {
+                String s = textFormatterService.getTextForBirthDay(members);
+                log.info("start posting");
+                postOnWall(vk, actor, groupId, s);
+                log.info("finish posting successfully");
+            }
+            jobLogService.saveLog(groupId, LocalDate.now(), "Ok", true);
+        } catch (ClientException | ApiException e) {
+            log.error(e.getMessage());
+            jobLogService.saveLog(groupId, LocalDate.now(), "Error", false);
         }
     }
 
-    private List<UserFull> getMembersWithBirthdayToday(VkApiClient vk, UserActor actor, Integer groupId) {
+    private List<UserFull> getMembersByBirthdayAndGroup(VkApiClient vk, UserActor actor, Integer groupId, LocalDate localDate) {
         log.info("start getting users with birthday");
-        LocalDate localDate = LocalDate.now();
         SearchResponse execute;
         try {
             execute = vk.users().search(actor).groupId(groupId)
@@ -60,13 +74,7 @@ public class VKService {
         }
     }
 
-    private void postOnWall(VkApiClient vk, UserActor actor, Integer groupId, String message) {
-        log.info("start posting");
-        try {
-            vk.wall().post(actor).fromGroup(true).ownerId(-groupId).message(message).execute();
-            log.info("finish posting successfully");
-        } catch (ApiException | ClientException exception) {
-            log.error(exception.getMessage());
-        }
+    private void postOnWall(VkApiClient vk, UserActor actor, Integer groupId, String message) throws ClientException, ApiException {
+        vk.wall().post(actor).fromGroup(true).ownerId(-groupId).message(message).execute();
     }
 }

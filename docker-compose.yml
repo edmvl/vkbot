@@ -8,6 +8,6 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_DB: vkbot
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: vkbot
+      POSTGRES_PASSWORD: vkbot
 
