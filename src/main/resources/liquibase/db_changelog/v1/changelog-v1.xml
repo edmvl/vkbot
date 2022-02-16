@@ -31,4 +31,14 @@
             <column name="success" remarks="Успешность" type="BOOLEAN"/>
         </createTable>
     </changeSet>
+    <changeSet id="add_horo_table" author="Evhenii_Dmitriev">
+        <createTable tableName="horo">
+            <column name="id" remarks="Идентификатор записи" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_horo"/>
+            </column>
+            <column name="sign" remarks="знак зодиака" type="VARCHAR(12)"/>
+            <column name="text" remarks="Текст прогноза" type="VARCHAR"/>
+            <column name="date" remarks="Дата прогноза" type="DATE"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

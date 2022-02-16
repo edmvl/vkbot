@@ -26,11 +26,13 @@ public class VKService {
     @Qualifier("httpTransportClient")
     private final TransportClient transportClient;
     private final TextFormatterService textFormatterService;
+    private final HoroService horoService;
     private final JobLogService jobLogService;
 
-    VKService(TextFormatterService textFormatterService, TransportClient transportClient, JobLogService jobLogService) {
+    VKService(TextFormatterService textFormatterService, TransportClient transportClient, HoroService horoService, JobLogService jobLogService) {
         this.textFormatterService = textFormatterService;
         this.transportClient = transportClient;
+        this.horoService = horoService;
         this.jobLogService = jobLogService;
     }
 
@@ -44,12 +46,14 @@ public class VKService {
         }
         List<UserFull> members = getMembersByBirthdayAndGroup(vk, actor, groupId, localDate);
         try {
+            log.info("start posting");
             if (CollectionUtils.isNotEmpty(members)) {
                 String s = textFormatterService.getTextForBirthDay(members);
-                log.info("start posting");
                 postOnWall(vk, actor, groupId, s);
-                log.info("finish posting successfully");
             }
+            String horoToDate = horoService.getHoroToDate(LocalDate.now());
+            postOnWall(vk, actor, groupId, horoToDate);
+            log.info("finish posting successfully");
             jobLogService.saveLog(groupId, LocalDate.now(), "Ok", true);
         } catch (ClientException | ApiException e) {
             log.error(e.getMessage());
