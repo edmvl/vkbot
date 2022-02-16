@@ -19,7 +19,7 @@ public class VkGroupProcessorJob {
         this.botUserService = botUserService;
     }
 
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 0 8 * * ?")
     public void congrats() {
         List<BotUser> allBotUsers = botUserService.getAllBotUsers();
         allBotUsers.forEach(botUser -> vkService.processGroup(

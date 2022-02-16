@@ -14,7 +14,7 @@ public class HoroLoadJob {
         this.horoService = horoService;
     }
 
-    @Scheduled(cron = "0 0 8 * * ?")
+    @Scheduled(cron = "0 0 3 * * ?")
     public void loadHoro() {
         horoService.grubDataFromResource();
     }
