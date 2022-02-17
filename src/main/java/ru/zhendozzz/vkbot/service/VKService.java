@@ -26,12 +26,14 @@ public class VKService {
     @Qualifier("httpTransportClient")
     private final TransportClient transportClient;
     private final TextFormatterService textFormatterService;
+    private final VkImageService vkImageService;
     private final HoroService horoService;
     private final JobLogService jobLogService;
 
-    VKService(TextFormatterService textFormatterService, TransportClient transportClient, HoroService horoService, JobLogService jobLogService) {
+    VKService(TextFormatterService textFormatterService, TransportClient transportClient, VkImageService vkImageService, HoroService horoService, JobLogService jobLogService) {
         this.textFormatterService = textFormatterService;
         this.transportClient = transportClient;
+        this.vkImageService = vkImageService;
         this.horoService = horoService;
         this.jobLogService = jobLogService;
     }
@@ -49,7 +51,8 @@ public class VKService {
             log.info("start posting");
             if (CollectionUtils.isNotEmpty(members)) {
                 String s = textFormatterService.getTextForBirthDay(members);
-                postOnWall(vk, actor, groupId, s);
+                String attachments = vkImageService.getAttachments(members);
+                postOnWall(vk, actor, groupId, s, attachments);
             }
             String horoToDate = horoService.getHoroToDate(LocalDate.now());
             postOnWall(vk, actor, groupId, horoToDate);
@@ -66,7 +69,7 @@ public class VKService {
         SearchResponse execute;
         try {
             execute = vk.users().search(actor).groupId(groupId)
-                .fields(Fields.DOMAIN)
+                .fields(Fields.DOMAIN, Fields.PHOTO, Fields.PHOTO_ID)
                 .birthDay(localDate.getDayOfMonth())
                 .birthMonth(localDate.getMonthValue())
                 .execute();
@@ -78,7 +81,16 @@ public class VKService {
         }
     }
 
+    private void postOnWall(VkApiClient vk, UserActor actor, Integer groupId, String message, String attachments) throws ClientException, ApiException {
+        vk.wall()
+            .post(actor)
+            .fromGroup(true)
+            .ownerId(-groupId)
+            .attachments(attachments)
+            .message(message)
+            .execute();
+    }
     private void postOnWall(VkApiClient vk, UserActor actor, Integer groupId, String message) throws ClientException, ApiException {
-        vk.wall().post(actor).fromGroup(true).ownerId(-groupId).message(message).execute();
+        postOnWall(vk, actor, groupId, message, null);
     }
 }
