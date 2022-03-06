@@ -15,12 +15,12 @@ import com.vk.api.sdk.objects.users.responses.SearchResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import ru.zhendozzz.vkbot.enums.JobType;
 
 @Service
 @Slf4j
-@Scope("singleton")
 public class VKService {
 
     @Qualifier("httpTransportClient")
@@ -38,29 +38,42 @@ public class VKService {
         this.jobLogService = jobLogService;
     }
 
-    public void processGroup(Integer groupId, String token, Integer vkUserId) {
+    public void congratsGroup(Integer groupId, String token, Integer vkUserId) {
         VkApiClient vk = new VkApiClient(this.transportClient);
         UserActor actor = new UserActor(vkUserId, token);
         LocalDate localDate = LocalDate.now();
-        if (jobLogService.isGroupProcessed(groupId, localDate)) {
-            log.info("Group " + groupId + " already has been processed");
-            return;
-        }
-        List<UserFull> members = getMembersByBirthdayAndGroup(vk, actor, groupId, localDate);
-        try {
-            log.info("start posting");
-            if (CollectionUtils.isNotEmpty(members)) {
-                String s = textFormatterService.getTextForBirthDay(members);
-                String attachments = vkImageService.getAttachments(members);
-                postOnWall(vk, actor, groupId, s, attachments);
+        if (!jobLogService.isGroupProcessed(groupId, localDate, JobType.VK_CONGRATS.getSysName())) {
+            try {
+                List<UserFull> members = getMembersByBirthdayAndGroup(vk, actor, groupId, localDate);
+                log.info("start posting");
+                if (CollectionUtils.isNotEmpty(members)) {
+                    String s = textFormatterService.getTextForBirthDay(members);
+                    String attachments = vkImageService.getAttachments(members);
+                    postOnWall(vk, actor, groupId, s, attachments);
+                }
+                log.info("finish posting successfully");
+                jobLogService.saveLog(groupId, LocalDate.now(), "Ok", true, JobType.VK_CONGRATS.getSysName());
+            } catch (ClientException | ApiException e) {
+                log.error(e.getMessage());
+                jobLogService.saveLog(groupId, LocalDate.now(), "Error", false, JobType.VK_CONGRATS.getSysName());
             }
-            String horoToDate = horoService.getHoroToDate(LocalDate.now());
-            postOnWall(vk, actor, groupId, horoToDate);
+        }
+    }
+
+    public void sendHoroGroup(Integer groupId, String token, Integer vkUserId) {
+        VkApiClient vk = new VkApiClient(this.transportClient);
+        UserActor actor = new UserActor(vkUserId, token);
+        LocalDate localDate = LocalDate.now();
+        if (!jobLogService.isGroupProcessed(groupId, localDate, JobType.HORO_SEND.getSysName())) {
+            try {
+                String horoToDate = horoService.getHoroToDate(LocalDate.now());
+                postOnWall(vk, actor, groupId, horoToDate);
+            } catch (ClientException | ApiException e) {
+                log.error(e.getMessage());
+                jobLogService.saveLog(groupId, LocalDate.now(), "Error", false, JobType.HORO_SEND.getSysName());
+            }
             log.info("finish posting successfully");
-            jobLogService.saveLog(groupId, LocalDate.now(), "Ok", true);
-        } catch (ClientException | ApiException e) {
-            log.error(e.getMessage());
-            jobLogService.saveLog(groupId, LocalDate.now(), "Error", false);
+            jobLogService.saveLog(groupId, LocalDate.now(), "Ok", true, JobType.HORO_SEND.getSysName());
         }
     }
 
@@ -90,6 +103,7 @@ public class VKService {
             .message(message)
             .execute();
     }
+
     private void postOnWall(VkApiClient vk, UserActor actor, Integer groupId, String message) throws ClientException, ApiException {
         postOnWall(vk, actor, groupId, message, null);
     }

@@ -1,24 +1,18 @@
-package ru.zhendozzz.vkbot.dao.entity;
+package ru.zhendozzz.vkbot.dto.joblog;
 
 import java.time.LocalDate;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Data
 @Builder
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class JobLog {
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+public class JobLogDto {
+
     private Long id;
 
     private Integer groupId;

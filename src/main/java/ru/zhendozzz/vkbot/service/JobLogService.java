@@ -1,6 +1,7 @@
 package ru.zhendozzz.vkbot.service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -16,18 +17,23 @@ public class JobLogService {
         this.jobLogRepository = jobLogRepository;
     }
 
-    public boolean isGroupProcessed(Integer groupId, LocalDate date) {
-        Optional<JobLog> byIdAndDate = jobLogRepository.findByGroupIdAndDateAndSuccess(groupId, date, true);
+    public boolean isGroupProcessed(Integer groupId, LocalDate date, String type) {
+        Optional<JobLog> byIdAndDate = jobLogRepository.findByGroupIdAndDateAndSuccessAndType(groupId, date, true, type);
         return byIdAndDate.isPresent();
     }
 
-    public void saveLog(Integer groupId, LocalDate now, String text, boolean success){
+    public void saveLog(Integer groupId, LocalDate now, String text, boolean success, String type){
         JobLog log = JobLog.builder()
             .groupId(groupId)
             .date(now)
             .text(text)
+            .type(type)
             .success(success)
             .build();
         jobLogRepository.save(log);
+    }
+
+    public List<JobLog> getAllLog(){
+        return jobLogRepository.findAll();
     }
 }

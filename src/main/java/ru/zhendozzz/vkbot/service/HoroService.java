@@ -14,25 +14,31 @@ import org.springframework.stereotype.Service;
 import ru.zhendozzz.vkbot.dao.entity.Horo;
 import ru.zhendozzz.vkbot.dao.repository.HoroRepository;
 import ru.zhendozzz.vkbot.enums.HoroscopeEnum;
+import ru.zhendozzz.vkbot.enums.JobType;
 
 @Service
 public class HoroService {
 
     private final HoroRepository horoRepository;
+    private final JobLogService jobLogService;
 
-    public HoroService(HoroRepository horoRepository) {
+    public HoroService(HoroRepository horoRepository, JobLogService jobLogService) {
         this.horoRepository = horoRepository;
+        this.jobLogService = jobLogService;
     }
 
     public void grubDataFromResource() {
         LocalDate now = LocalDate.now();
-        Arrays.stream(HoroscopeEnum.values())
-            .map(sign -> parseHoro(sign.getSysname()))
-            .forEach(data -> horoRepository.save(Horo.builder()
-                .date(now)
-                .sign(data.getLeft())
-                .text(data.getRight())
-                .build()));
+        if (!jobLogService.isGroupProcessed(null, now, JobType.HORO_LOAD.getSysName())) {
+            Arrays.stream(HoroscopeEnum.values())
+                .map(sign -> parseHoro(sign.getSysname()))
+                .forEach(data -> horoRepository.save(Horo.builder()
+                    .date(now)
+                    .sign(data.getLeft())
+                    .text(data.getRight())
+                    .build()));
+            jobLogService.saveLog(null, now, "Ok", true, JobType.HORO_LOAD.getSysName());
+        }
     }
 
     public String getHoroToDate(LocalDate date) {

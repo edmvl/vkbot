@@ -22,8 +22,10 @@ public class VkGroupProcessorJob {
     @Scheduled(cron = "0 0 8 * * ?")
     public void congrats() {
         List<BotUser> allBotUsers = botUserService.getAllBotUsers();
-        allBotUsers.forEach(botUser -> vkService.processGroup(
-            botUser.getGroupId(), botUser.getToken(), botUser.getVkUserId())
+        allBotUsers.forEach(botUser -> {
+                vkService.congratsGroup(botUser.getGroupId(), botUser.getToken(), botUser.getVkUserId());
+                vkService.sendHoroGroup(botUser.getGroupId(), botUser.getToken(), botUser.getVkUserId());
+            }
         );
     }
 }
