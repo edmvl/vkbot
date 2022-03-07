@@ -42,7 +42,7 @@ public class VKService {
         VkApiClient vk = new VkApiClient(this.transportClient);
         UserActor actor = new UserActor(vkUserId, token);
         LocalDate localDate = LocalDate.now();
-        if (!jobLogService.isGroupProcessed(groupId, localDate, JobType.VK_CONGRATS.getSysName())) {
+        if (jobLogService.isGroupNotProcessed(groupId, localDate, JobType.VK_CONGRATS.getSysName())) {
             try {
                 List<UserFull> members = getMembersByBirthdayAndGroup(vk, actor, groupId, localDate);
                 log.info("start posting");
@@ -64,7 +64,7 @@ public class VKService {
         VkApiClient vk = new VkApiClient(this.transportClient);
         UserActor actor = new UserActor(vkUserId, token);
         LocalDate localDate = LocalDate.now();
-        if (!jobLogService.isGroupProcessed(groupId, localDate, JobType.HORO_SEND.getSysName())) {
+        if (jobLogService.isGroupNotProcessed(groupId, localDate, JobType.HORO_SEND.getSysName())) {
             try {
                 String horoToDate = horoService.getHoroToDate(LocalDate.now());
                 postOnWall(vk, actor, groupId, horoToDate);

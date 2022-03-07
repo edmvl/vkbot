@@ -17,9 +17,9 @@ public class JobLogService {
         this.jobLogRepository = jobLogRepository;
     }
 
-    public boolean isGroupProcessed(Integer groupId, LocalDate date, String type) {
+    public boolean isGroupNotProcessed(Integer groupId, LocalDate date, String type) {
         Optional<JobLog> byIdAndDate = jobLogRepository.findByGroupIdAndDateAndSuccessAndType(groupId, date, true, type);
-        return byIdAndDate.isPresent();
+        return byIdAndDate.isEmpty();
     }
 
     public void saveLog(Integer groupId, LocalDate now, String text, boolean success, String type){

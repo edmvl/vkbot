@@ -29,7 +29,7 @@ public class HoroService {
 
     public void grubDataFromResource() {
         LocalDate now = LocalDate.now();
-        if (!jobLogService.isGroupProcessed(null, now, JobType.HORO_LOAD.getSysName())) {
+        if (jobLogService.isGroupNotProcessed(null, now, JobType.HORO_LOAD.getSysName())) {
             Arrays.stream(HoroscopeEnum.values())
                 .map(sign -> parseHoro(sign.getSysname()))
                 .forEach(data -> horoRepository.save(Horo.builder()
