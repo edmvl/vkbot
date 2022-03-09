@@ -9,9 +9,11 @@ import com.vk.api.sdk.client.VkApiClient;
 import com.vk.api.sdk.client.actors.UserActor;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
+import com.vk.api.sdk.objects.base.responses.OkResponse;
 import com.vk.api.sdk.objects.users.Fields;
 import com.vk.api.sdk.objects.users.UserFull;
 import com.vk.api.sdk.objects.users.responses.SearchResponse;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -60,7 +62,8 @@ public class VKService {
         }
     }
 
-    public void sendHoroGroup(Integer groupId, String token, Integer vkUserId) {
+    @SneakyThrows
+    public String sendHoroGroup(Integer groupId, String token, Integer vkUserId) {
         VkApiClient vk = new VkApiClient(this.transportClient);
         UserActor actor = new UserActor(vkUserId, token);
         LocalDate localDate = LocalDate.now();
@@ -68,12 +71,18 @@ public class VKService {
             try {
                 String horoToDate = horoService.getHoroToDate(LocalDate.now());
                 postOnWall(vk, actor, groupId, horoToDate);
+                log.info("finish posting successfully");
+                jobLogService.saveLog(groupId, LocalDate.now(), "Ok", true, JobType.HORO_SEND.getSysName());
+                return "Ok";
             } catch (ClientException | ApiException e) {
                 log.error(e.getMessage());
-                jobLogService.saveLog(groupId, LocalDate.now(), "Error", false, JobType.HORO_SEND.getSysName());
+                jobLogService.saveLog(groupId, LocalDate.now(), e.getMessage(), false, JobType.HORO_SEND.getSysName());
+                throw e;
             }
-            log.info("finish posting successfully");
-            jobLogService.saveLog(groupId, LocalDate.now(), "Ok", true, JobType.HORO_SEND.getSysName());
+        }else {
+            log.info("Дублированный запрос, Гороскоп уже опубликован ранее");
+            jobLogService.saveLog(groupId, LocalDate.now(), "Duplicated", false, JobType.HORO_SEND.getSysName());
+            return "Гороскоп уже опубликован";
         }
     }
 
@@ -92,6 +101,13 @@ public class VKService {
             log.error(exception.getMessage());
             return Collections.emptyList();
         }
+    }
+
+    public String inviteModerator(Integer groupId, String token, Integer vkUserId) throws ClientException, ApiException {
+        VkApiClient vk = new VkApiClient(this.transportClient);
+        UserActor actor = new UserActor(vkUserId, token);
+        OkResponse execute = vk.groups().join(actor).groupId(groupId).execute();
+        return execute.getValue();
     }
 
     private void postOnWall(VkApiClient vk, UserActor actor, Integer groupId, String message, String attachments) throws ClientException, ApiException {

@@ -1,4 +1,6 @@
-package ru.zhendozzz.vkbot.dto.botuser;
+package ru.zhendozzz.vkbot.dto.group;
+
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,10 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BotUserDto {
-    private Long id;
-
-    private Integer vkUserId;
-
-    private String token;
+public class GroupListDto {
+    private List<GroupDto> settingList;
 }

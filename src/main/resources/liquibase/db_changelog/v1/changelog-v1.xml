@@ -7,7 +7,6 @@
             <column name="id" remarks="Идентификатор записи" type="BIGINT" autoIncrement="true">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_bot_user"/>
             </column>
-            <column name="group_id" remarks="Тип субъекта, которому назначены права" type="BIGINT"/>
             <column name="token" type="VARCHAR(255)"/>
             <column name="vk_user_id" type="BIGINT"/>
         </createTable>
@@ -15,7 +14,6 @@
     <changeSet id="add_rows_to_bot_user" author="Evhenii_Dmitriev">
         <insert tableName="bot_user">
             <column name="id" value="0"/>
-            <column name="group_id" value="210516567"/>
             <column name="token" value="a37435383309d0a773134da74a46c57d28cc7ff924630a453bf951db5d3bb5a7ac47a9d4c237d4db4767b"/>
             <column name="vk_user_id" value="6903594"/>
         </insert>
@@ -40,6 +38,16 @@
             <column name="sign" remarks="знак зодиака" type="VARCHAR(12)"/>
             <column name="text" remarks="Текст прогноза" type="VARCHAR"/>
             <column name="date" remarks="Дата прогноза" type="DATE"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Evgenii Dmitriev" id="03022022_group_setting_create">
+        <createTable tableName="group">
+            <column name="id" remarks="Идентификатор записи" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_group_setting"/>
+            </column>
+            <column name="group_id" remarks="Ид группы" type="BIGINT"/>
+            <column name="group_name" remarks="Наименование группы" type="VARCHAR"/>
+            <column name="setting" remarks="Настройки" type="JSON"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

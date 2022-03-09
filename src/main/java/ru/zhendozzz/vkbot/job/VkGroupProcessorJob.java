@@ -5,26 +5,23 @@ import java.util.List;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import ru.zhendozzz.vkbot.dao.entity.BotUser;
-import ru.zhendozzz.vkbot.service.BotUserService;
-import ru.zhendozzz.vkbot.service.VKService;
+import ru.zhendozzz.vkbot.dao.entity.Group;
+import ru.zhendozzz.vkbot.service.GroupService;
 
 @Service
 public class VkGroupProcessorJob {
-    private final VKService vkService;
-    private final BotUserService botUserService;
+    private final GroupService groupService;
 
-    public VkGroupProcessorJob(VKService userSearchService, BotUserService botUserService) {
-        this.vkService = userSearchService;
-        this.botUserService = botUserService;
+    public VkGroupProcessorJob(GroupService groupService) {
+        this.groupService = groupService;
     }
 
     @Scheduled(cron = "0 0 8 * * ?")
     public void congrats() {
-        List<BotUser> allBotUsers = botUserService.getAllBotUsers();
-        allBotUsers.forEach(botUser -> {
-                vkService.congratsGroup(botUser.getGroupId(), botUser.getToken(), botUser.getVkUserId());
-                vkService.sendHoroGroup(botUser.getGroupId(), botUser.getToken(), botUser.getVkUserId());
+        List<Group> groups = groupService.getGroups();
+        groups.forEach(botUser -> {
+                groupService.congratsGroup(botUser.getGroupId());
+                groupService.sendHoro(botUser.getGroupId());
             }
         );
     }

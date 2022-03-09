@@ -27,7 +27,7 @@ public class HoroService {
         this.jobLogService = jobLogService;
     }
 
-    public void grubDataFromResource() {
+    public String grubDataFromResource() {
         LocalDate now = LocalDate.now();
         if (jobLogService.isGroupNotProcessed(null, now, JobType.HORO_LOAD.getSysName())) {
             Arrays.stream(HoroscopeEnum.values())
@@ -38,10 +38,17 @@ public class HoroService {
                     .text(data.getRight())
                     .build()));
             jobLogService.saveLog(null, now, "Ok", true, JobType.HORO_LOAD.getSysName());
+            return "Ok";
+        }else {
+            jobLogService.saveLog(null, now, "Diplicate", false, JobType.HORO_LOAD.getSysName());
+            return "Гороскопы уже загружены ранее";
         }
     }
 
     public String getHoroToDate(LocalDate date) {
+        if (jobLogService.isGroupNotProcessed(null, date, JobType.HORO_LOAD.getSysName())){
+            grubDataFromResource();
+        }
         HoroscopeEnum[] values = HoroscopeEnum.values();
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder

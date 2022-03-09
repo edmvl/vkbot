@@ -1,7 +1,5 @@
 package ru.zhendozzz.vkbot.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.springframework.stereotype.Service;
@@ -17,9 +15,9 @@ public class BotUserService {
         this.botUserRepository = botUserRepository;
     }
 
-    public List<BotUser> getAllBotUsers(){
+    public BotUser getUser(){
         Iterable<BotUser> all = botUserRepository.findAll();
         return StreamSupport.stream(all.spliterator(), false)
-            .collect(Collectors.toList());
+            .findFirst().orElse(null);
     }
 }
