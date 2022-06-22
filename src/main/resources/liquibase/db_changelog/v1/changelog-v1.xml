@@ -50,4 +50,14 @@
             <column name="setting" remarks="Настройки" type="JSON"/>
         </createTable>
     </changeSet>
+    <changeSet id="220722_add_weather_table" author="Evhenii_Dmitriev">
+        <createTable tableName="weather">
+            <column name="id" remarks="Идентификатор записи" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_weather"/>
+            </column>
+            <column name="group_id" remarks="Ид группы" type="BIGINT"/>
+            <column name="text" remarks="Обьект прогноза погоды" type="VARCHAR"/>
+            <column name="date" remarks="Дата прогноза" type="DATE"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

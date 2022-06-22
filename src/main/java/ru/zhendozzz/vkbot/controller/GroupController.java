@@ -15,13 +15,16 @@ import ru.zhendozzz.vkbot.dto.common.CommonDto;
 import ru.zhendozzz.vkbot.dto.group.GroupDto;
 import ru.zhendozzz.vkbot.dto.group.GroupListDto;
 import ru.zhendozzz.vkbot.service.GroupService;
+import ru.zhendozzz.vkbot.service.VKService;
 
 @RestController
 @RequestMapping("/api/v1/group")
 public class GroupController {
     private final GroupService groupService;
-    public GroupController(GroupService groupService) {
+    private final VKService vkService;
+    public GroupController(GroupService groupService, VKService vkService) {
         this.groupService = groupService;
+        this.vkService = vkService;
     }
 
     @GetMapping("/list")
@@ -69,7 +72,7 @@ public class GroupController {
 
     @GetMapping("/invite/{groupId}")
     public CommonDto invite(@PathVariable("groupId") Integer groupId) {
-        groupService.inviteModerator(groupId);
+        vkService.inviteModerator(groupId);
         return CommonDto.builder()
             .result("Ok")
             .build();

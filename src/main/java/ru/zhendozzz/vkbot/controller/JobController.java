@@ -16,19 +16,20 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.zhendozzz.vkbot.service.VKService;
 
 @RestController
 @RequestMapping("/api/v1/jobs")
 public class JobController {
-    private final GroupService groupService;
     private final JobLogService jobLogService;
     private final HoroService horoService;
+    private final VKService vkService;
 
     @Autowired
-    public JobController(GroupService groupService, JobLogService jobLogService, HoroService horoService) {
-        this.groupService = groupService;
+    public JobController(JobLogService jobLogService, HoroService horoService, VKService vkService) {
         this.jobLogService = jobLogService;
         this.horoService = horoService;
+        this.vkService = vkService;
     }
 
 
@@ -42,7 +43,15 @@ public class JobController {
 
     @GetMapping("/sendhoro")
     public CommonDto sendHoro() {
-        String s = groupService.sendHoroToGroups();
+        String s = vkService.sendHoroToGroups();
+        return CommonDto.builder()
+            .result(s)
+            .build();
+    }
+
+    @GetMapping("/sendweather")
+    public CommonDto sendWeather() {
+        String s = vkService.sendWeatherToGroups();
         return CommonDto.builder()
             .result(s)
             .build();
@@ -50,7 +59,15 @@ public class JobController {
 
     @GetMapping("/sendhoro/{groupId}")
     public CommonDto sendHoroToGroup(@PathVariable("groupId") Integer groupId) {
-        String s = groupService.sendHoro(groupId);
+        String s = vkService.sendHoro(groupId);
+        return CommonDto.builder()
+            .result(s)
+            .build();
+    }
+
+    @GetMapping("/weather/{groupId}")
+    public CommonDto sendWeatherToGroup(@PathVariable("groupId") Integer groupId) {
+        String s = vkService.sendWeather(groupId);
         return CommonDto.builder()
             .result(s)
             .build();
@@ -58,7 +75,7 @@ public class JobController {
 
     @GetMapping("/congrats")
     public ResponseEntity<Object> startCongrats() {
-        groupService.congratsAllGroups();
+        vkService.congratsAllGroups();
         return ResponseEntity.ok().build();
     }
 
