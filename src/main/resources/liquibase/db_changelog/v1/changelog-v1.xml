@@ -60,4 +60,9 @@
             <column name="date" remarks="Дата прогноза" type="DATE"/>
         </createTable>
     </changeSet>
+    <changeSet id="230722_add_column_weather_table" author="Evhenii_Dmitriev">
+        <addColumn tableName="weather">
+            <column name="part" type="BIGINT"></column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

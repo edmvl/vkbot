@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.zhendozzz.vkbot.dto.common.CommonDto;
 import ru.zhendozzz.vkbot.dto.joblog.JobLogDto;
 import ru.zhendozzz.vkbot.dto.joblog.JobLogListDto;
-import ru.zhendozzz.vkbot.service.GroupService;
 import ru.zhendozzz.vkbot.service.HoroService;
 import ru.zhendozzz.vkbot.service.JobLogService;
 
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.zhendozzz.vkbot.service.VKService;
+import ru.zhendozzz.vkbot.service.weather.WeatherService;
 
 @RestController
 @RequestMapping("/api/v1/jobs")
@@ -24,12 +24,14 @@ public class JobController {
     private final JobLogService jobLogService;
     private final HoroService horoService;
     private final VKService vkService;
+    private final WeatherService weatherService;
 
     @Autowired
-    public JobController(JobLogService jobLogService, HoroService horoService, VKService vkService) {
+    public JobController(JobLogService jobLogService, HoroService horoService, VKService vkService, WeatherService weatherService) {
         this.jobLogService = jobLogService;
         this.horoService = horoService;
         this.vkService = vkService;
+        this.weatherService = weatherService;
     }
 
 
@@ -54,6 +56,14 @@ public class JobController {
         String s = vkService.sendWeatherToGroups();
         return CommonDto.builder()
             .result(s)
+            .build();
+    }
+
+    @GetMapping("/loadweather")
+    public CommonDto loadWeather() {
+        weatherService.downloadWeather();
+        return CommonDto.builder()
+            .result("Ok")
             .build();
     }
 

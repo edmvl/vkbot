@@ -103,22 +103,16 @@ public class VKService {
         VkApiClient vk = new VkApiClient(this.transportClient);
         UserActor actor = new UserActor(vkUserId, token);
         LocalDate localDate = LocalDate.now();
-        if (jobLogService.isGroupNotProcessed(groupId, localDate, JobType.WEATHER_SEND.getSysName())) {
-            try {
-                String weather = weatherService.getWeather(localDate, groupId);
-                postOnWall(vk, actor, groupId, weather);
-                log.info("finish posting successfully");
-                jobLogService.saveLog(groupId, LocalDate.now(), "Ok", true, JobType.WEATHER_SEND.getSysName());
-                return "Ok";
-            } catch (ClientException | ApiException e) {
-                log.error(e.getMessage());
-                jobLogService.saveLog(groupId, LocalDate.now(), e.getMessage(), false, JobType.WEATHER_SEND.getSysName());
-                throw e;
-            }
-        } else {
-            log.info("Дублированный запрос, Прогноз уже опубликован ранее");
-            jobLogService.saveLog(groupId, LocalDate.now(), "Duplicated", false, JobType.WEATHER_SEND.getSysName());
-            return "Прогноз уже опубликован";
+        try {
+            String weather = weatherService.getWeather(localDate, groupId);
+            postOnWall(vk, actor, groupId, weather);
+            log.info("finish posting successfully");
+            jobLogService.saveLog(groupId, LocalDate.now(), "Ok", true, JobType.WEATHER_SEND.getSysName());
+            return "Ok";
+        } catch (ClientException | ApiException e) {
+            log.error(e.getMessage());
+            jobLogService.saveLog(groupId, LocalDate.now(), e.getMessage(), false, JobType.WEATHER_SEND.getSysName());
+            throw e;
         }
     }
 
@@ -158,7 +152,7 @@ public class VKService {
     }
 
     @SneakyThrows
-    public String inviteModerator(Integer groupId){
+    public String inviteModerator(Integer groupId) {
         BotUser user = botUserService.getUser();
         String s = inviteModerator(groupId, user.getToken(), user.getVkUserId());
         Optional<Group> byId = groupService.findGroupByGroupId(groupId);

@@ -23,4 +23,5 @@ public class Weather {
     private Integer groupId;
     private String text;
     private LocalDate date;
+    private Integer part;
 }
