@@ -36,7 +36,7 @@ public class ProcessorJob {
     @Scheduled(cron = "0 0 8 * * ?")
     public void horo() {
         List<Group> groups = groupService.getGroups();
-        groups.forEach(botUser -> vkService.sendHoro(botUser.getGroupId()));
+        groups.forEach(group -> vkService.sendHoro(group));
     }
 
     @Scheduled(cron = "0 0 4 * * ?")

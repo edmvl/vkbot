@@ -116,9 +116,29 @@ public class VKService {
         }
     }
 
+    public String sendHoro(Group group) {
+        BotUser user = botUserService.getUser();
+        String horoEnabled = group.getSetting().get("horo_enabled");
+        if ("true".equals(horoEnabled)) {
+            return sendHoroGroup(group.getGroupId(), user.getToken(), user.getVkUserId());
+        } else {
+            return "Гороскоп отключен для сообщества";
+        }
+    }
+
     public String sendHoro(Integer groupId) {
         BotUser user = botUserService.getUser();
-        return sendHoroGroup(groupId, user.getToken(), user.getVkUserId());
+        Optional<Group> groupByGroupId = groupService.findGroupByGroupId(groupId);
+        if (groupByGroupId.isPresent()) {
+            Group group = groupByGroupId.get();
+            String horoEnabled = group.getSetting().get("horo_enabled");
+            if ("true".equals(horoEnabled)) {
+                return sendHoroGroup(group.getGroupId(), user.getToken(), user.getVkUserId());
+            } else {
+                return "Гороскоп отключен для сообщества";
+            }
+        }
+        return null;
     }
 
     public String sendWeather(Integer groupId) {
@@ -204,4 +224,5 @@ public class VKService {
     private void postOnWall(VkApiClient vk, UserActor actor, Integer groupId, String message) throws ClientException, ApiException {
         postOnWall(vk, actor, groupId, message, null);
     }
+
 }
