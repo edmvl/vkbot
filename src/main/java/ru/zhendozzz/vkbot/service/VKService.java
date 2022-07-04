@@ -6,6 +6,7 @@ import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
 import com.vk.api.sdk.objects.base.responses.OkResponse;
+import com.vk.api.sdk.objects.photos.Photo;
 import com.vk.api.sdk.objects.users.Fields;
 import com.vk.api.sdk.objects.users.UserFull;
 import com.vk.api.sdk.objects.users.responses.SearchResponse;
@@ -23,13 +24,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class VKService {
 
     private final TextFormatterService textFormatterService;
-    private final VkImageService vkImageService;
     private final HoroService horoService;
     private final JobLogService jobLogService;
     private final WeatherService weatherService;
@@ -39,15 +40,14 @@ public class VKService {
     private final VkApiClient vk;
 
 
-    VKService(TextFormatterService textFormatterService, VkImageService vkImageService, HoroService horoService, JobLogService jobLogService, WeatherService weatherService, BotUserService botUserService, GroupService groupService) {
+    VKService(TextFormatterService textFormatterService, HoroService horoService, JobLogService jobLogService, WeatherService weatherService, BotUserService botUserService, GroupService groupService) {
         this.textFormatterService = textFormatterService;
-        this.vkImageService = vkImageService;
         this.horoService = horoService;
         this.jobLogService = jobLogService;
         this.weatherService = weatherService;
         this.botUserService = botUserService;
         this.groupService = groupService;
-        vk =  new VkApiClient(new HttpTransportClient());
+        vk = new VkApiClient(new HttpTransportClient());
     }
 
     public void congratsGroup(Integer groupId, String token, Integer vkUserId) {
@@ -59,7 +59,7 @@ public class VKService {
                 log.info("start posting");
                 if (CollectionUtils.isNotEmpty(members)) {
                     String s = textFormatterService.getTextForBirthDay(members);
-                    String attachments = vkImageService.getAttachments(members);
+                    String attachments = attachUserProfilePhoto(members);
                     postOnWall(vk, actor, groupId, s, attachments);
                 }
                 log.info("finish posting successfully");
@@ -69,6 +69,11 @@ public class VKService {
                 jobLogService.saveLog(groupId, LocalDate.now(), "Error", false, JobType.VK_CONGRATS.getSysName());
             }
         }
+    }
+
+    private String attachUserProfilePhoto(List<UserFull> members) {
+        return members.stream()
+                .map(member -> "photo" + member.getPhotoId()).collect(Collectors.joining(", "));
     }
 
     @SneakyThrows
@@ -100,10 +105,16 @@ public class VKService {
         LocalDate localDate = LocalDate.now();
         try {
             String weather = weatherService.getWeather(localDate, groupId);
-            postOnWall(vk, actor, groupId, weather);
-            log.info("finish posting successfully");
-            jobLogService.saveLog(groupId, LocalDate.now(), "Ok", true, JobType.WEATHER_SEND.getSysName());
-            return "Ok";
+            if (weather.isEmpty()) {
+                jobLogService.saveLog(groupId, LocalDate.now(), "Error: weather object is empty", false, JobType.WEATHER_SEND.getSysName());
+                log.info("weather object is empty");
+                return "Error";
+            } else {
+                postOnWall(vk, actor, groupId, weather);
+                log.info("finish posting successfully");
+                jobLogService.saveLog(groupId, LocalDate.now(), "Ok", true, JobType.WEATHER_SEND.getSysName());
+                return "Ok";
+            }
         } catch (ClientException | ApiException e) {
             log.error(e.getMessage());
             jobLogService.saveLog(groupId, LocalDate.now(), e.getMessage(), false, JobType.WEATHER_SEND.getSysName());
@@ -219,4 +230,17 @@ public class VKService {
         postOnWall(vk, actor, groupId, message, null);
     }
 
+    @SneakyThrows
+    public List<Photo> getPhotosFromAlbum(String albumId, Integer groupId) {
+        BotUser user = botUserService.getUser();
+        UserActor actor = new UserActor(user.getVkUserId(), user.getToken());
+        return vk.photos().get(actor).albumId(albumId).ownerId(-groupId).count(1000).execute().getItems();
+    }
+
+    @SneakyThrows
+    public void sendPhotoToGroup(Integer groupId, String attachments){
+        BotUser user = botUserService.getUser();
+        UserActor actor = new UserActor(user.getVkUserId(), user.getToken());
+        postOnWall(vk, actor, groupId, "", attachments);
+    }
 }

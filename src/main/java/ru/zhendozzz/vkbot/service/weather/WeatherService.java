@@ -30,8 +30,7 @@ public class WeatherService {
         List<Group> groups = groupService.getGroups();
         groups.forEach(group -> {
             Map<String, String> setting = group.getSetting();
-            String weatherEnabled = setting.get("weather_enabled");
-            if ("true".equals(weatherEnabled)) {
+            if (Objects.nonNull(setting) && "true".equals(setting.get("weather_enabled"))) {
                 String weatherCoord = setting.get("weather_coord");
                 String[] s = weatherCoord.split(" ");
                 String lat = s[0];

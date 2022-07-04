@@ -16,14 +16,17 @@ import ru.zhendozzz.vkbot.dto.group.GroupDto;
 import ru.zhendozzz.vkbot.dto.group.GroupListDto;
 import ru.zhendozzz.vkbot.service.GroupService;
 import ru.zhendozzz.vkbot.service.VKService;
+import ru.zhendozzz.vkbot.service.photoposter.PhotoService;
 
 @RestController
 @RequestMapping("/api/v1/group")
 public class GroupController {
     private final GroupService groupService;
+    private final PhotoService photoService;
     private final VKService vkService;
-    public GroupController(GroupService groupService, VKService vkService) {
+    public GroupController(GroupService groupService, PhotoService photoService, VKService vkService) {
         this.groupService = groupService;
+        this.photoService = photoService;
         this.vkService = vkService;
     }
 
@@ -73,6 +76,22 @@ public class GroupController {
     @GetMapping("/invite/{groupId}")
     public CommonDto invite(@PathVariable("groupId") Integer groupId) {
         vkService.inviteModerator(groupId);
+        return CommonDto.builder()
+            .result("Ok")
+            .build();
+    }
+
+    @GetMapping("/loadphoto/{groupId}/{albumId}")
+    public CommonDto loadPhoto(@PathVariable("groupId") Integer groupId, @PathVariable("albumId") String albumId) {
+        photoService.loadPhotoListFromAlbum(albumId, groupId);
+        return CommonDto.builder()
+            .result("Ok")
+            .build();
+    }
+
+    @GetMapping("/sendphoto")
+    public CommonDto sendPhoto() {
+        photoService.sendPhotoToGroups();
         return CommonDto.builder()
             .result("Ok")
             .build();

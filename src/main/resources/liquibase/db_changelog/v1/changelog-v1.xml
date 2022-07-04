@@ -65,4 +65,13 @@
             <column name="part" type="BIGINT"></column>
         </addColumn>
     </changeSet>
+    <changeSet id="040722_add_vk_photo_table" author="Evhenii_Dmitriev">
+        <createTable tableName="vk_photo">
+            <column name="id" remarks="Идентификатор записи" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_vk_photo"/>
+            </column>
+            <column name="group_id" remarks="Ид группы" type="BIGINT"/>
+            <column name="vk_image_id" remarks="Ид фото" type="VARCHAR"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

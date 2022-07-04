@@ -20,6 +20,9 @@ public class WeatherExplainerService {
     }
 
     public String explainWeather(String weatherFromResource) {
+        if (weatherFromResource.isEmpty()){
+            return "";
+        }
         Weather weather = convertJSONtoWeather(weatherFromResource);
         Forecast forecast = weather.getForecast();
         Map<String, ForecastPart> parts = remapParts(forecast.getParts());

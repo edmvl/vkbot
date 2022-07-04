@@ -9,6 +9,7 @@ import ru.zhendozzz.vkbot.dao.entity.Group;
 import ru.zhendozzz.vkbot.service.GroupService;
 import ru.zhendozzz.vkbot.service.HoroService;
 import ru.zhendozzz.vkbot.service.VKService;
+import ru.zhendozzz.vkbot.service.photoposter.PhotoService;
 import ru.zhendozzz.vkbot.service.weather.WeatherService;
 
 @Service
@@ -17,14 +18,16 @@ public class ProcessorJob {
     private final VKService vkService;
     private final HoroService horoService;
     private final WeatherService weatherService;
+    private final PhotoService photoService;
 
     public ProcessorJob(
-            GroupService groupService, VKService vkService, HoroService horoService, WeatherService weatherService
-    ) {
+            GroupService groupService, VKService vkService, HoroService horoService, WeatherService weatherService,
+            PhotoService photoService) {
         this.groupService = groupService;
         this.vkService = vkService;
         this.horoService = horoService;
         this.weatherService = weatherService;
+        this.photoService = photoService;
     }
 
     @Scheduled(cron = "0 0 8 * * ?")
@@ -36,7 +39,7 @@ public class ProcessorJob {
     @Scheduled(cron = "0 0 8 * * ?")
     public void horo() {
         List<Group> groups = groupService.getGroups();
-        groups.forEach(group -> vkService.sendHoro(group));
+        groups.forEach(vkService::sendHoro);
     }
 
     @Scheduled(cron = "0 0 4 * * ?")
@@ -65,4 +68,10 @@ public class ProcessorJob {
     public void loadHoro() {
         horoService.grubDataFromResource();
     }
+
+    @Scheduled(cron = "0 0 10,13,17 * * ?")
+    public void sendPhotoFromAlbum() {
+        photoService.sendPhotoToGroups();
+    }
+
 }
