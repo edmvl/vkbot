@@ -1,16 +1,10 @@
 package ru.zhendozzz.vkbot.service;
 
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import com.vk.api.sdk.client.TransportClient;
 import com.vk.api.sdk.client.VkApiClient;
 import com.vk.api.sdk.client.actors.UserActor;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
+import com.vk.api.sdk.httpclient.HttpTransportClient;
 import com.vk.api.sdk.objects.base.responses.OkResponse;
 import com.vk.api.sdk.objects.users.Fields;
 import com.vk.api.sdk.objects.users.UserFull;
@@ -18,20 +12,22 @@ import com.vk.api.sdk.objects.users.responses.SearchResponse;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-
 import ru.zhendozzz.vkbot.dao.entity.BotUser;
 import ru.zhendozzz.vkbot.dao.entity.Group;
 import ru.zhendozzz.vkbot.enums.JobType;
 import ru.zhendozzz.vkbot.service.weather.WeatherService;
 
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 @Service
 @Slf4j
 public class VKService {
 
-    @Qualifier("httpTransportClient")
-    private final TransportClient transportClient;
     private final TextFormatterService textFormatterService;
     private final VkImageService vkImageService;
     private final HoroService horoService;
@@ -40,20 +36,21 @@ public class VKService {
     private final BotUserService botUserService;
     private final GroupService groupService;
 
+    private final VkApiClient vk;
 
-    VKService(TextFormatterService textFormatterService, TransportClient transportClient, VkImageService vkImageService, HoroService horoService, JobLogService jobLogService, WeatherService weatherService, BotUserService botUserService, GroupService groupService) {
+
+    VKService(TextFormatterService textFormatterService, VkImageService vkImageService, HoroService horoService, JobLogService jobLogService, WeatherService weatherService, BotUserService botUserService, GroupService groupService) {
         this.textFormatterService = textFormatterService;
-        this.transportClient = transportClient;
         this.vkImageService = vkImageService;
         this.horoService = horoService;
         this.jobLogService = jobLogService;
         this.weatherService = weatherService;
         this.botUserService = botUserService;
         this.groupService = groupService;
+        vk =  new VkApiClient(new HttpTransportClient());
     }
 
     public void congratsGroup(Integer groupId, String token, Integer vkUserId) {
-        VkApiClient vk = new VkApiClient(this.transportClient);
         UserActor actor = new UserActor(vkUserId, token);
         LocalDate localDate = LocalDate.now();
         if (jobLogService.isGroupNotProcessed(groupId, localDate, JobType.VK_CONGRATS.getSysName())) {
@@ -76,7 +73,6 @@ public class VKService {
 
     @SneakyThrows
     public String sendHoroGroup(Integer groupId, String token, Integer vkUserId) {
-        VkApiClient vk = new VkApiClient(this.transportClient);
         UserActor actor = new UserActor(vkUserId, token);
         LocalDate localDate = LocalDate.now();
         if (jobLogService.isGroupNotProcessed(groupId, localDate, JobType.HORO_SEND.getSysName())) {
@@ -100,7 +96,6 @@ public class VKService {
 
     @SneakyThrows
     public String sendWeatherGroup(Integer groupId, String token, Integer vkUserId) {
-        VkApiClient vk = new VkApiClient(this.transportClient);
         UserActor actor = new UserActor(vkUserId, token);
         LocalDate localDate = LocalDate.now();
         try {
@@ -205,7 +200,6 @@ public class VKService {
     }
 
     public String inviteModerator(Integer groupId, String token, Integer vkUserId) throws ClientException, ApiException {
-        VkApiClient vk = new VkApiClient(this.transportClient);
         UserActor actor = new UserActor(vkUserId, token);
         OkResponse execute = vk.groups().join(actor).groupId(groupId).execute();
         return execute.getValue();
