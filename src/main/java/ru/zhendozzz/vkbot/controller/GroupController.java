@@ -1,33 +1,28 @@
 package ru.zhendozzz.vkbot.controller;
 
-import java.util.stream.Collectors;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import ru.zhendozzz.vkbot.dao.entity.Group;
 import ru.zhendozzz.vkbot.dto.common.CommonDto;
 import ru.zhendozzz.vkbot.dto.group.GroupDto;
 import ru.zhendozzz.vkbot.dto.group.GroupListDto;
-import ru.zhendozzz.vkbot.service.GroupService;
-import ru.zhendozzz.vkbot.service.VKService;
+import ru.zhendozzz.vkbot.service.group.GroupManagementService;
+import ru.zhendozzz.vkbot.service.group.GroupService;
 import ru.zhendozzz.vkbot.service.photoposter.PhotoService;
+
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/group")
 public class GroupController {
+
     private final GroupService groupService;
     private final PhotoService photoService;
-    private final VKService vkService;
-    public GroupController(GroupService groupService, PhotoService photoService, VKService vkService) {
+    private final GroupManagementService groupManagementService;
+
+    public GroupController(GroupService groupService, PhotoService photoService, GroupManagementService groupManagementService) {
         this.groupService = groupService;
         this.photoService = photoService;
-        this.vkService = vkService;
+        this.groupManagementService = groupManagementService;
     }
 
     @GetMapping("/list")
@@ -75,7 +70,7 @@ public class GroupController {
 
     @GetMapping("/invite/{groupId}")
     public CommonDto invite(@PathVariable("groupId") Integer groupId) {
-        vkService.inviteModerator(groupId);
+        groupManagementService.inviteModerator(groupId);
         return CommonDto.builder()
             .result("Ok")
             .build();

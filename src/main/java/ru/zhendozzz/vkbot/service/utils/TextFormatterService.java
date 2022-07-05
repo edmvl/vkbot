@@ -1,4 +1,4 @@
-package ru.zhendozzz.vkbot.service;
+package ru.zhendozzz.vkbot.service.utils;
 
 import java.util.List;
 import java.util.stream.Collectors;

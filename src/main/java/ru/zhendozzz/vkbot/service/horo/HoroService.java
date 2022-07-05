@@ -1,4 +1,4 @@
-package ru.zhendozzz.vkbot.service;
+package ru.zhendozzz.vkbot.service.horo;
 
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.tuple.Pair;
@@ -9,6 +9,7 @@ import ru.zhendozzz.vkbot.dao.entity.Horo;
 import ru.zhendozzz.vkbot.dao.repository.HoroRepository;
 import ru.zhendozzz.vkbot.enums.HoroscopeEnum;
 import ru.zhendozzz.vkbot.enums.JobType;
+import ru.zhendozzz.vkbot.service.JobLogService;
 
 import java.io.IOException;
 import java.time.LocalDate;

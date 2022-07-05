@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.zhendozzz.vkbot.dao.entity.Group;
 import ru.zhendozzz.vkbot.dao.entity.VkPhoto;
 import ru.zhendozzz.vkbot.dao.repository.VkPhotoRepository;
-import ru.zhendozzz.vkbot.service.GroupService;
+import ru.zhendozzz.vkbot.service.group.GroupService;
 import ru.zhendozzz.vkbot.service.VKService;
 
 import java.util.List;

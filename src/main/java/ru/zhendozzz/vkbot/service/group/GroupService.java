@@ -1,4 +1,4 @@
-package ru.zhendozzz.vkbot.service;
+package ru.zhendozzz.vkbot.service.group;
 
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;

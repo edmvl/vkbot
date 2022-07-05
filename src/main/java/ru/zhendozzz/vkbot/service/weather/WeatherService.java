@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.zhendozzz.vkbot.dao.entity.Group;
 import ru.zhendozzz.vkbot.dao.entity.Weather;
 import ru.zhendozzz.vkbot.dao.repository.WeatherRepository;
-import ru.zhendozzz.vkbot.service.GroupService;
+import ru.zhendozzz.vkbot.service.group.GroupService;
 
 import java.time.LocalDate;
 import java.util.List;
