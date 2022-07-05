@@ -20,7 +20,7 @@ public class WeatherExplainerService {
     }
 
     public String explainWeather(String weatherFromResource) {
-        if (weatherFromResource.isEmpty()){
+        if (Objects.isNull(weatherFromResource) || weatherFromResource.isEmpty()) {
             return "";
         }
         Weather weather = convertJSONtoWeather(weatherFromResource);
