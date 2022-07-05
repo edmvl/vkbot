@@ -122,6 +122,11 @@ public class VKService {
         }
     }
 
+    public void sendHoroAll(){
+        List<Group> groups = groupService.getGroups();
+        groups.forEach(this::sendHoro);
+    }
+
     public String sendHoro(Group group) {
         BotUser user = botUserService.getUser();
         String horoEnabled = group.getSetting().get("horo_enabled");
@@ -150,6 +155,11 @@ public class VKService {
     public String sendWeather(Integer groupId) {
         BotUser user = botUserService.getUser();
         return sendWeatherGroup(groupId, user.getToken(), user.getVkUserId());
+    }
+
+    public void sendWeatherAll(){
+        List<Group> groups = groupService.getGroups();
+        groups.forEach(botUser -> sendWeather(botUser.getGroupId()));
     }
 
     public String sendHoroToGroups() {

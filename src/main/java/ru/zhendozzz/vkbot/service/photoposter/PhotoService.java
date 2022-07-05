@@ -1,7 +1,6 @@
 package ru.zhendozzz.vkbot.service.photoposter;
 
 import com.vk.api.sdk.objects.photos.Photo;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.zhendozzz.vkbot.dao.entity.Group;
 import ru.zhendozzz.vkbot.dao.entity.VkPhoto;
