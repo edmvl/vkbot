@@ -18,12 +18,12 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
-public class HoroService {
+public class HoroLoaderService {
 
     private final HoroRepository horoRepository;
     private final JobLogService jobLogService;
 
-    public HoroService(HoroRepository horoRepository, JobLogService jobLogService) {
+    public HoroLoaderService(HoroRepository horoRepository, JobLogService jobLogService) {
         this.horoRepository = horoRepository;
         this.jobLogService = jobLogService;
     }

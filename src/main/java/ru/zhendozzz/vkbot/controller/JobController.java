@@ -9,7 +9,7 @@ import ru.zhendozzz.vkbot.dto.joblog.JobLogDto;
 import ru.zhendozzz.vkbot.dto.joblog.JobLogListDto;
 import ru.zhendozzz.vkbot.service.birthday.BirthdaySenderService;
 import ru.zhendozzz.vkbot.service.horo.HoroSenderService;
-import ru.zhendozzz.vkbot.service.horo.HoroService;
+import ru.zhendozzz.vkbot.service.horo.HoroLoaderService;
 import ru.zhendozzz.vkbot.service.JobLogService;
 
 import org.springframework.http.ResponseEntity;
@@ -25,18 +25,16 @@ import ru.zhendozzz.vkbot.service.weather.WeatherService;
 @RequestMapping("/api/v1/jobs")
 public class JobController {
     private final JobLogService jobLogService;
-    private final HoroService horoService;
-    private final VKService vkService;
+    private final HoroLoaderService horoLoaderService;
     private final WeatherService weatherService;
     private final HoroSenderService horoSenderService;
     private final WeatherSenderService sendWeatherToGroups;
     private final BirthdaySenderService birthdaySenderService;
 
     @Autowired
-    public JobController(JobLogService jobLogService, HoroService horoService, VKService vkService, WeatherService weatherService, HoroSenderService horoSenderService, WeatherSenderService sendWeatherToGroups, BirthdaySenderService birthdaySenderService) {
+    public JobController(JobLogService jobLogService, HoroLoaderService horoLoaderService, VKService vkService, WeatherService weatherService, HoroSenderService horoSenderService, WeatherSenderService sendWeatherToGroups, BirthdaySenderService birthdaySenderService) {
         this.jobLogService = jobLogService;
-        this.horoService = horoService;
-        this.vkService = vkService;
+        this.horoLoaderService = horoLoaderService;
         this.weatherService = weatherService;
         this.horoSenderService = horoSenderService;
         this.sendWeatherToGroups = sendWeatherToGroups;
@@ -46,7 +44,7 @@ public class JobController {
 
     @GetMapping("/loadhoro")
     public CommonDto loadHoro() {
-        String s = horoService.grubDataFromResource();
+        String s = horoLoaderService.grubDataFromResource();
         return CommonDto.builder()
             .result(s)
             .build();

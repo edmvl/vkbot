@@ -22,17 +22,17 @@ import java.util.Optional;
 @Service
 public class HoroSenderService {
 
-    private final HoroService horoService;
+    private final HoroLoaderService horoLoaderService;
     private final JobLogService jobLogService;
     private final VKService vkService;
     private final BotUserService botUserService;
     private final GroupService groupService;
 
     public HoroSenderService(
-            HoroService horoService, JobLogService jobLogService, VKService vkService, BotUserService botUserService,
+            HoroLoaderService horoLoaderService, JobLogService jobLogService, VKService vkService, BotUserService botUserService,
             GroupService groupService
     ) {
-        this.horoService = horoService;
+        this.horoLoaderService = horoLoaderService;
         this.jobLogService = jobLogService;
         this.vkService = vkService;
         this.botUserService = botUserService;
@@ -45,7 +45,7 @@ public class HoroSenderService {
         LocalDate localDate = LocalDate.now();
         if (jobLogService.isGroupNotProcessed(groupId, localDate, JobType.HORO_SEND.getSysName())) {
             try {
-                String horoToDate = horoService.getHoroToDate(LocalDate.now());
+                String horoToDate = horoLoaderService.getHoroToDate(LocalDate.now());
                 vkService.postOnWall(actor, groupId, horoToDate);
                 log.info("finish posting successfully");
                 jobLogService.saveLog(groupId, LocalDate.now(), "Ok", true, JobType.HORO_SEND.getSysName());
