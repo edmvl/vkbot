@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.zhendozzz.vkbot.dao.entity.BotUser;
 import ru.zhendozzz.vkbot.dao.entity.Group;
 import ru.zhendozzz.vkbot.service.BotUserService;
-import ru.zhendozzz.vkbot.service.VKService;
+import ru.zhendozzz.vkbot.service.utils.VKService;
 
 import java.util.Map;
 import java.util.Optional;
@@ -25,7 +25,7 @@ public class GroupManagementService {
 
     @SneakyThrows
     public String inviteModerator(Integer groupId) {
-        BotUser user = botUserService.getUser();
+        BotUser user = botUserService.getVkUser();
         String s = vkService.inviteModerator(groupId, user.getToken(), user.getVkUserId());
         Optional<Group> byId = groupService.findGroupByGroupId(groupId);
         if (byId.isPresent()) {

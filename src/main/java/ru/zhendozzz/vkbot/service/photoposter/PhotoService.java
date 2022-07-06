@@ -1,26 +1,31 @@
 package ru.zhendozzz.vkbot.service.photoposter;
 
+import com.vk.api.sdk.objects.photos.Image;
 import com.vk.api.sdk.objects.photos.Photo;
+import com.vk.api.sdk.objects.photos.PhotoSizes;
 import org.springframework.stereotype.Service;
 import ru.zhendozzz.vkbot.dao.entity.Group;
 import ru.zhendozzz.vkbot.dao.entity.VkPhoto;
 import ru.zhendozzz.vkbot.dao.repository.VkPhotoRepository;
 import ru.zhendozzz.vkbot.service.group.GroupService;
-import ru.zhendozzz.vkbot.service.VKService;
+import ru.zhendozzz.vkbot.service.utils.TgBotService;
+import ru.zhendozzz.vkbot.service.utils.VKService;
 
-import java.util.List;
-import java.util.Random;
+import java.net.URI;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class PhotoService {
 
     private final VKService vkService;
+    private final TgBotService tgBotService;
     private final GroupService groupService;
     private final VkPhotoRepository vkPhotoRepository;
 
-    public PhotoService(VKService vkService, GroupService groupService, VkPhotoRepository vkPhotoRepository) {
+    public PhotoService(VKService vkService, TgBotService tgBotService, GroupService groupService, VkPhotoRepository vkPhotoRepository) {
         this.vkService = vkService;
+        this.tgBotService = tgBotService;
         this.groupService = groupService;
         this.vkPhotoRepository = vkPhotoRepository;
     }
@@ -32,6 +37,7 @@ public class PhotoService {
                 photo -> VkPhoto.builder()
                         .vkImageId("photo" + photo.getOwnerId() + "_" + photo.getId().toString())
                         .groupId(groupId)
+                        .url(photo.getSizes().stream().max(Comparator.comparingInt(PhotoSizes::getWidth)).orElseGet(null).getUrl().toString())
                         .build()
         ).collect(Collectors.toList());
 
@@ -51,6 +57,11 @@ public class PhotoService {
 
                 vkService.sendPhotoToGroup(groupId, randomPhotoList.stream().map(VkPhoto::getVkImageId).collect(Collectors.joining(",")));
                 vkPhotoRepository.deleteAll(randomPhotoList);
+            }
+            Map<String, String> setting = group.getSetting();
+            if (Objects.nonNull(setting) && "true".equals(setting.get("tg_duplicate_enabled"))) {
+                String tg_chat_id = setting.get("tg_chat_id");
+                tgBotService.sendPhotoesToChat(photosFromAlbum, tg_chat_id);
             }
         });
     }

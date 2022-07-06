@@ -13,7 +13,7 @@ import ru.zhendozzz.vkbot.enums.JobType;
 import ru.zhendozzz.vkbot.service.BotUserService;
 import ru.zhendozzz.vkbot.service.group.GroupService;
 import ru.zhendozzz.vkbot.service.JobLogService;
-import ru.zhendozzz.vkbot.service.VKService;
+import ru.zhendozzz.vkbot.service.utils.VKService;
 import ru.zhendozzz.vkbot.service.utils.TextFormatterService;
 
 import java.time.LocalDate;
@@ -61,7 +61,7 @@ public class BirthdaySenderService {
     }
 
     public void congratsAllGroups() {
-        BotUser user = botUserService.getUser();
+        BotUser user = botUserService.getVkUser();
         List<Group> groups = groupService.getGroups();
         groups.forEach(botUser -> congratsGroup(botUser.getGroupId(), user.getToken(), user.getVkUserId()));
     }

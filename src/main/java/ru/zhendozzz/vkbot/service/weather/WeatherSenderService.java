@@ -12,7 +12,7 @@ import ru.zhendozzz.vkbot.enums.JobType;
 import ru.zhendozzz.vkbot.service.BotUserService;
 import ru.zhendozzz.vkbot.service.group.GroupService;
 import ru.zhendozzz.vkbot.service.JobLogService;
-import ru.zhendozzz.vkbot.service.VKService;
+import ru.zhendozzz.vkbot.service.utils.VKService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -59,7 +59,7 @@ public class WeatherSenderService {
     }
 
     public String sendWeather(Integer groupId) {
-        BotUser user = botUserService.getUser();
+        BotUser user = botUserService.getVkUser();
         return sendWeatherGroup(groupId, user.getToken(), user.getVkUserId());
     }
 
@@ -69,7 +69,7 @@ public class WeatherSenderService {
     }
 
     public String sendWeatherToGroups() {
-        BotUser user = botUserService.getUser();
+        BotUser user = botUserService.getVkUser();
         List<Group> groups = groupService.getGroups();
         groups.forEach(botUser -> sendWeatherGroup(botUser.getGroupId(), user.getToken(), user.getVkUserId()));
         return "Ok";

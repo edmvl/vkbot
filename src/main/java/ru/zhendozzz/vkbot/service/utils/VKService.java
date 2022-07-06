@@ -1,4 +1,4 @@
-package ru.zhendozzz.vkbot.service;
+package ru.zhendozzz.vkbot.service.utils;
 
 import com.vk.api.sdk.client.VkApiClient;
 import com.vk.api.sdk.client.actors.UserActor;
@@ -14,6 +14,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.zhendozzz.vkbot.dao.entity.BotUser;
+import ru.zhendozzz.vkbot.service.BotUserService;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -74,14 +75,14 @@ public class VKService {
 
     @SneakyThrows
     public List<Photo> getPhotosFromAlbum(String albumId, Integer groupId) {
-        BotUser user = botUserService.getUser();
+        BotUser user = botUserService.getVkUser();
         UserActor actor = new UserActor(user.getVkUserId(), user.getToken());
         return vk.photos().get(actor).albumId(albumId).ownerId(-groupId).count(1000).execute().getItems();
     }
 
     @SneakyThrows
     public void sendPhotoToGroup(Integer groupId, String attachments) {
-        BotUser user = botUserService.getUser();
+        BotUser user = botUserService.getVkUser();
         UserActor actor = new UserActor(user.getVkUserId(), user.getToken());
         postOnWall(actor, groupId, "", attachments);
     }

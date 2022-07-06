@@ -21,4 +21,5 @@ public class VkPhoto {
     private long id;
     private Integer groupId;
     private String vkImageId;
+    private String url;
 }

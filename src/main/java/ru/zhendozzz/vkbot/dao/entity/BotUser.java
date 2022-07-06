@@ -14,4 +14,6 @@ public class BotUser {
     private Integer vkUserId;
 
     private String token;
+
+    private String type;
 }

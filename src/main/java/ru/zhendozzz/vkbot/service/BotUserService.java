@@ -15,8 +15,14 @@ public class BotUserService {
         this.botUserRepository = botUserRepository;
     }
 
-    public BotUser getUser(){
-        Iterable<BotUser> all = botUserRepository.findAll();
+    public BotUser getVkUser(){
+        Iterable<BotUser> all = botUserRepository.findAllByType("VK");
+        return StreamSupport.stream(all.spliterator(), false)
+            .findFirst().orElse(null);
+    }
+
+    public BotUser getTelegramUser(){
+        Iterable<BotUser> all = botUserRepository.findAllByType("TG");
         return StreamSupport.stream(all.spliterator(), false)
             .findFirst().orElse(null);
     }

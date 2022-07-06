@@ -74,4 +74,26 @@
             <column name="vk_image_id" remarks="Ид фото" type="VARCHAR"/>
         </createTable>
     </changeSet>
+    <changeSet id="060722_add_column_bot_user" author="Evhenii_Dmitriev">
+        <addColumn tableName="bot_user">
+            <column name="type" type="VARCHAR"/>
+        </addColumn>
+        <update tableName="bot_user">
+            <column name="type" value="VK"/>
+            <where>id=0</where>
+        </update>
+    </changeSet>
+    <changeSet id="060722_add_rows_to_bot_user" author="Evhenii_Dmitriev">
+        <insert tableName="bot_user">
+            <column name="id" value="1"/>
+            <column name="token" value="5588363085:AAHrdTWlDMeSP12rtZIW-SiR6-Dr9B1z5xc"/>
+            <column name="vk_user_id" value="null"/>
+            <column name="type" value="TG"/>
+        </insert>
+    </changeSet>
+    <changeSet id="060722_add_column_vk_photo" author="Evhenii_Dmitriev">
+        <addColumn tableName="vk_photo">
+            <column name="url" type="VARCHAR"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -12,10 +12,12 @@ import ru.zhendozzz.vkbot.enums.JobType;
 import ru.zhendozzz.vkbot.service.BotUserService;
 import ru.zhendozzz.vkbot.service.group.GroupService;
 import ru.zhendozzz.vkbot.service.JobLogService;
-import ru.zhendozzz.vkbot.service.VKService;
+import ru.zhendozzz.vkbot.service.utils.VKService;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -68,9 +70,9 @@ public class HoroSenderService {
     }
 
     public String sendHoro(Group group) {
-        BotUser user = botUserService.getUser();
-        String horoEnabled = group.getSetting().get("horo_enabled");
-        if ("true".equals(horoEnabled)) {
+        BotUser user = botUserService.getVkUser();
+        Map<String, String> setting = group.getSetting();
+        if (Objects.nonNull(setting) && "true".equals(setting.get("horo_enabled"))) {
             return sendHoroGroup(group.getGroupId(), user.getToken(), user.getVkUserId());
         } else {
             return "Гороскоп отключен для сообщества";
