@@ -62,26 +62,9 @@ public class HoroSenderService {
         }
     }
 
-    public String sendHoroToGroups() {
-        BotUser user = botUserService.getUser();
-        List<Group> groups = groupService.getGroups();
-        groups.forEach(group -> sendHoroGroup(group.getGroupId(), user.getToken(), user.getVkUserId()));
-        return "Ok";
-    }
-
     public String sendHoro(Integer groupId) {
-        BotUser user = botUserService.getUser();
         Optional<Group> groupByGroupId = groupService.findGroupByGroupId(groupId);
-        if (groupByGroupId.isPresent()) {
-            Group group = groupByGroupId.get();
-            String horoEnabled = group.getSetting().get("horo_enabled");
-            if ("true".equals(horoEnabled)) {
-                return sendHoroGroup(group.getGroupId(), user.getToken(), user.getVkUserId());
-            } else {
-                return "Гороскоп отключен для сообщества";
-            }
-        }
-        return null;
+        return groupByGroupId.map(this::sendHoro).orElse(null);
     }
 
     public String sendHoro(Group group) {

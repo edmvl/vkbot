@@ -54,9 +54,9 @@ public class JobController {
 
     @GetMapping("/sendhoro")
     public CommonDto sendHoro() {
-        String s = horoSenderService.sendHoroToGroups();
+        horoSenderService.sendHoroAll();
         return CommonDto.builder()
-            .result(s)
+            .result("Ok")
             .build();
     }
 
