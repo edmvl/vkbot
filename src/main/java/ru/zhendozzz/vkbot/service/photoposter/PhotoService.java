@@ -57,11 +57,11 @@ public class PhotoService {
 
                 vkService.sendPhotoToGroup(groupId, randomPhotoList.stream().map(VkPhoto::getVkImageId).collect(Collectors.joining(",")));
                 vkPhotoRepository.deleteAll(randomPhotoList);
-            }
-            Map<String, String> setting = group.getSetting();
-            if (Objects.nonNull(setting) && "true".equals(setting.get("tg_duplicate_enabled"))) {
-                String tg_chat_id = setting.get("tg_chat_id");
-                tgBotService.sendPhotoesToChat(photosFromAlbum, tg_chat_id);
+                Map<String, String> setting = group.getSetting();
+                if (Objects.nonNull(setting) && "true".equals(setting.get("tg_duplicate_enabled"))) {
+                    String tg_chat_id = setting.get("tg_chat_id");
+                    tgBotService.sendPhotoesToChat(randomPhotoList, tg_chat_id);
+                }
             }
         });
     }
