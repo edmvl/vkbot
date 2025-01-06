@@ -15,7 +15,7 @@
         <insert tableName="bot_user">
             <column name="id" value="0"/>
             <column name="token" value="vk1.a.BTbrUotENd1PTWjdrWjtWM4zAeMUW9ej-4mfQroaog3LUmr-9t7Gf_QLHeVqBRJlDzA3YsGMrEto7xgWZ4IZRzwv-J3UEg3xwGw3pv9tjVVbjYE3IqUahzEXGu0_w4za0-XKSYxodMwRSX7O8BFrZPpudv_j4eybHmI9ZA0sQQIgV3vWhoD9kNtwFLdtoOODaDQHtPSFddYPDMccHV38kA"/>
-            <column name="vk_user_id" value=""/>
+            <column name="vk_user_id" value="null"/>
         </insert>
     </changeSet>
     <changeSet id="add_job_log" author="Evhenii_Dmitriev">
