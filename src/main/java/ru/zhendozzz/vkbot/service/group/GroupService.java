@@ -27,7 +27,7 @@ public class GroupService {
     }
 
 
-    public Group save(Integer groupId, String groupName) {
+    public Group save(Long groupId, String groupName) {
         Group group = Group.builder()
             .groupId(groupId)
             .groupName(groupName)

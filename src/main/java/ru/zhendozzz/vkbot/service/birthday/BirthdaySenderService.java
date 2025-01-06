@@ -39,7 +39,7 @@ public class BirthdaySenderService {
         this.textFormatterService = textFormatterService;
     }
 
-    public void congratsGroup(Integer groupId, String token, Integer vkUserId) {
+    public void congratsGroup(Long groupId, String token, Long vkUserId) {
         UserActor actor = new UserActor(vkUserId, token);
         LocalDate localDate = LocalDate.now();
         if (jobLogService.isGroupNotProcessed(groupId, localDate, JobType.VK_CONGRATS.getSysName())) {

@@ -1,11 +1,14 @@
 package ru.zhendozzz.vkbot.service.utils;
 
+import com.google.gson.Gson;
 import com.vk.api.sdk.client.VkApiClient;
 import com.vk.api.sdk.client.actors.UserActor;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
-import com.vk.api.sdk.objects.base.responses.OkResponse;
+import com.vk.api.sdk.objects.groups.UserXtrRole;
+import com.vk.api.sdk.objects.groups.responses.GetMembersFieldsResponse;
+import com.vk.api.sdk.objects.groups.responses.GetMembersResponse;
 import com.vk.api.sdk.objects.photos.Photo;
 import com.vk.api.sdk.objects.users.Fields;
 import com.vk.api.sdk.objects.users.UserFull;
@@ -17,8 +20,13 @@ import ru.zhendozzz.vkbot.dao.entity.BotUser;
 import ru.zhendozzz.vkbot.service.BotUserService;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalField;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -36,30 +44,35 @@ public class VKService {
     }
 
 
-    public List<UserFull> getMembersByBirthdayAndGroup(UserActor actor, Integer groupId, LocalDate localDate) {
+    public List<UserFull> getMembersByBirthdayAndGroup(UserActor actor, Long groupId, LocalDate localDate) {
         log.info("start getting users with birthday");
-        SearchResponse execute;
+        ArrayList<UserFull> res = new ArrayList<>();
+        String birthday = localDate.get(ChronoField.DAY_OF_MONTH) + "." + localDate.get(ChronoField.MONTH_OF_YEAR);
         try {
-            execute = vk.users().search(actor).groupId(groupId)
-                    .fields(Fields.DOMAIN, Fields.PHOTO, Fields.PHOTO_ID)
-                    .birthDay(localDate.getDayOfMonth())
-                    .birthMonth(localDate.getMonthValue())
-                    .execute();
-            log.info("finish getting users with birthday with result:" + execute.getItems().toString());
-            return execute.getItems();
-        } catch (ApiException | ClientException exception) {
+            Integer offset = 0;
+            Integer count = 1000;
+            Integer respCount;
+            do {
+                GetMembersFieldsResponse resp = vk.groups().getMembersWithFields(actor, Fields.BDATE)
+                        .groupId(groupId.toString())
+                        .count(count)
+                        .offset(offset * count)
+                        .execute();
+                respCount = resp.getCount();
+                resp.getItems().stream()
+                        .filter(userXtrRole -> birthday.equals(userXtrRole.getBdate()))
+                        .forEach(res::add);
+                offset++;
+            } while (respCount > count * offset);
+            log.info("finish getting users with birthday with result:");
+            return res;
+        } catch (ClientException | ApiException exception) {
             log.error(exception.getMessage());
             return Collections.emptyList();
         }
     }
 
-    public String inviteModerator(Integer groupId, String token, Integer vkUserId) throws ClientException, ApiException {
-        UserActor actor = new UserActor(vkUserId, token);
-        OkResponse execute = vk.groups().join(actor).groupId(groupId).execute();
-        return execute.getValue();
-    }
-
-    public void postOnWall(UserActor actor, Integer groupId, String message, String attachments) throws ClientException, ApiException {
+    public void postOnWall(UserActor actor, Long groupId, String message, String attachments) throws ClientException, ApiException {
         vk.wall()
                 .post(actor)
                 .fromGroup(true)
@@ -69,19 +82,19 @@ public class VKService {
                 .execute();
     }
 
-    public void postOnWall(UserActor actor, Integer groupId, String message) throws ClientException, ApiException {
+    public void postOnWall(UserActor actor, Long groupId, String message) throws ClientException, ApiException {
         postOnWall(actor, groupId, message, null);
     }
 
     @SneakyThrows
-    public List<Photo> getPhotosFromAlbum(String albumId, Integer groupId) {
+    public List<Photo> getPhotosFromAlbum(String albumId, Long groupId) {
         BotUser user = botUserService.getVkUser();
         UserActor actor = new UserActor(user.getVkUserId(), user.getToken());
         return vk.photos().get(actor).albumId(albumId).ownerId(-groupId).count(1000).execute().getItems();
     }
 
     @SneakyThrows
-    public void sendPhotoToGroup(Integer groupId, String attachments) {
+    public void sendPhotoToGroup(Long groupId, String attachments) {
         BotUser user = botUserService.getVkUser();
         UserActor actor = new UserActor(user.getVkUserId(), user.getToken());
         postOnWall(actor, groupId, "", attachments);

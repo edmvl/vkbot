@@ -17,12 +17,12 @@ public class JobLogService {
         this.jobLogRepository = jobLogRepository;
     }
 
-    public boolean isGroupNotProcessed(Integer groupId, LocalDate date, String type) {
+    public boolean isGroupNotProcessed(Long groupId, LocalDate date, String type) {
         Optional<JobLog> byIdAndDate = jobLogRepository.findByGroupIdAndDateAndSuccessAndType(groupId, date, true, type);
         return byIdAndDate.isEmpty();
     }
 
-    public void saveLog(Integer groupId, LocalDate now, String text, boolean success, String type){
+    public void saveLog(Long groupId, LocalDate now, String text, boolean success, String type){
         JobLog log = JobLog.builder()
             .groupId(groupId)
             .date(now)

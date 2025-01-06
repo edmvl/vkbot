@@ -28,7 +28,7 @@ public class Group {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
-    private Integer groupId;
+    private Long groupId;
 
     private String groupName;
 

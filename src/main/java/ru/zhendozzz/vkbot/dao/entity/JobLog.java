@@ -21,7 +21,7 @@ public class JobLog {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
-    private Integer groupId;
+    private Long groupId;
 
     private LocalDate date;
 

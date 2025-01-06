@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class GroupDto {
     private Long id;
 
-    private Integer groupId;
+    private Long groupId;
 
     private String groupName;
 

@@ -15,7 +15,7 @@ public class JobLogDto {
 
     private Long id;
 
-    private Integer groupId;
+    private Long groupId;
 
     private LocalDate date;
 

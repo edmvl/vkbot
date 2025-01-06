@@ -11,7 +11,7 @@ public class TextFormatterService {
     public String getTextForBirthDay(List<UserFull> members){
 
         String collect = members.stream().map(
-            u -> "@" + u.getDomain() + " (" +u.getFirstName() + " " + u.getLastName() + ")"
+            u -> "@id" + u.getId() + " (" +u.getFirstName() + " " + u.getLastName() + ")"
         ).collect(Collectors.joining(", "));
 
         boolean multipleMembers = members.size() > 1;

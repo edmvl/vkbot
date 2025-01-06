@@ -14,8 +14,8 @@
     <changeSet id="add_rows_to_bot_user" author="Evhenii_Dmitriev">
         <insert tableName="bot_user">
             <column name="id" value="0"/>
-            <column name="token" value="a37435383309d0a773134da74a46c57d28cc7ff924630a453bf951db5d3bb5a7ac47a9d4c237d4db4767b"/>
-            <column name="vk_user_id" value="6903594"/>
+            <column name="token" value="vk1.a.BTbrUotENd1PTWjdrWjtWM4zAeMUW9ej-4mfQroaog3LUmr-9t7Gf_QLHeVqBRJlDzA3YsGMrEto7xgWZ4IZRzwv-J3UEg3xwGw3pv9tjVVbjYE3IqUahzEXGu0_w4za0-XKSYxodMwRSX7O8BFrZPpudv_j4eybHmI9ZA0sQQIgV3vWhoD9kNtwFLdtoOODaDQHtPSFddYPDMccHV38kA"/>
+            <column name="vk_user_id" value=""/>
         </insert>
     </changeSet>
     <changeSet id="add_job_log" author="Evhenii_Dmitriev">
@@ -30,16 +30,6 @@
             <column name="success" remarks="Успешность" type="BOOLEAN"/>
         </createTable>
     </changeSet>
-    <changeSet id="add_horo_table" author="Evhenii_Dmitriev">
-        <createTable tableName="horo">
-            <column name="id" remarks="Идентификатор записи" type="BIGINT" autoIncrement="true">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_horo"/>
-            </column>
-            <column name="sign" remarks="знак зодиака" type="VARCHAR(12)"/>
-            <column name="text" remarks="Текст прогноза" type="VARCHAR"/>
-            <column name="date" remarks="Дата прогноза" type="DATE"/>
-        </createTable>
-    </changeSet>
     <changeSet author="Evgenii Dmitriev" id="03022022_group_setting_create">
         <createTable tableName="group">
             <column name="id" remarks="Идентификатор записи" type="BIGINT" autoIncrement="true">
@@ -49,21 +39,6 @@
             <column name="group_name" remarks="Наименование группы" type="VARCHAR"/>
             <column name="setting" remarks="Настройки" type="JSON"/>
         </createTable>
-    </changeSet>
-    <changeSet id="220722_add_weather_table" author="Evhenii_Dmitriev">
-        <createTable tableName="weather">
-            <column name="id" remarks="Идентификатор записи" type="BIGINT" autoIncrement="true">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_weather"/>
-            </column>
-            <column name="group_id" remarks="Ид группы" type="BIGINT"/>
-            <column name="text" remarks="Обьект прогноза погоды" type="VARCHAR"/>
-            <column name="date" remarks="Дата прогноза" type="DATE"/>
-        </createTable>
-    </changeSet>
-    <changeSet id="230722_add_column_weather_table" author="Evhenii_Dmitriev">
-        <addColumn tableName="weather">
-            <column name="part" type="BIGINT"></column>
-        </addColumn>
     </changeSet>
     <changeSet id="040722_add_vk_photo_table" author="Evhenii_Dmitriev">
         <createTable tableName="vk_photo">
@@ -82,14 +57,6 @@
             <column name="type" value="VK"/>
             <where>id=0</where>
         </update>
-    </changeSet>
-    <changeSet id="060722_add_rows_to_bot_user" author="Evhenii_Dmitriev">
-        <insert tableName="bot_user">
-            <column name="id" value="1"/>
-            <column name="token" value="5588363085:AAHrdTWlDMeSP12rtZIW-SiR6-Dr9B1z5xc"/>
-            <column name="vk_user_id" value="null"/>
-            <column name="type" value="TG"/>
-        </insert>
     </changeSet>
     <changeSet id="060722_add_column_vk_photo" author="Evhenii_Dmitriev">
         <addColumn tableName="vk_photo">

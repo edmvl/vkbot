@@ -11,7 +11,7 @@ public class BotUser {
     @Id
     private Long id;
 
-    private Integer vkUserId;
+    private Long vkUserId;
 
     private String token;
 

@@ -19,7 +19,7 @@ public class VkPhoto {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private long id;
-    private Integer groupId;
+    private Long groupId;
     private String vkImageId;
     private String url;
 }

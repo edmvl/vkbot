@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface VkPhotoRepository extends CrudRepository<VkPhoto, Long> {
-    List<VkPhoto> findByGroupId(Integer integer);
+    List<VkPhoto> findByGroupId(Long integer);
 }
